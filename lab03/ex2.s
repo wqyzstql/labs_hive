@@ -41,12 +41,21 @@ main:
     addi s0, x0, 0
     la s1, source
     la s2, dest
+
+# for Problem1: The register representing the variable k is t0
+# for Problem2: The register representing the variable sum is s0
+# for Problem3: The registers acting as pointers to the source and dest arrays is s1 and s2
+# for Problem4: The assembly code for the loop found in the C code is undering.
+# for Problem5: How the pointers are manipulated in the assembly code.
+# First of all, s1 and s2 is the start address of Array source and dest, then calculate the value of offset
+# then use start + 4 * offset to get the address of array[now]
+
 loop:
-    slli s3, t0, 2 #s3 = t0<<2
+    slli s3, t0, 2 #s3 = t0<<2 , t0 is offset,because a word is 4Byte so need to shift left 2 （2^2=4)
     add t1, s1, s3
-    lw t2, 0(t1)#t2 = source[s3] t2=k
-    beq t2, x0, exit#if t2==0 break
-    add a0, x0, t2#a0 = t2
+    lw t2, 0(t1)#t2 = source[s3] t0=k
+    beq t2, x0, exit#if source[k]==0 break
+    add a0, x0, t2#a0 = source[k]
 
     addi sp, sp, -8#call func
     sw t0, 0(sp)
@@ -63,7 +72,7 @@ loop:
     addi t0, t0, 1
     jal x0, loop
 exit:
-    add a0, x0, s0
+    add a1, x0, s0
     # BEGIN EPILOGUE
     lw s0, 0(sp)
     lw s1, 4(sp)
@@ -72,5 +81,7 @@ exit:
     lw ra, 16(sp)
     addi sp, sp, 20
     # END EPILOGUE
+    addi a0, x0, 1
+    ecall
     addi a0, x0, 10
     ecall

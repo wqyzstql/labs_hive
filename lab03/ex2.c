@@ -12,5 +12,5 @@ int main() {
         dest[k] = fun(source[k]);
         sum += dest[k];
     }
-    return sum;
+    return 0;
 }
