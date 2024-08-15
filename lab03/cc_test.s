@@ -28,7 +28,9 @@ main:
     # naive_pow: should return 2 ** 7 = 128
     li a0, 2
     li a1, 7
+
     jal naive_pow
+
     li t0, 128
     bne a0, t0, failure
     # inc_arr: increments "array" in place
@@ -55,7 +57,7 @@ main:
 # FIXME Fix the reported error in this function (you can delete lines
 # if necessary, as long as the function still returns 1 in a0).
 simple_fn:
-    mv a0, t0
+    #mv a0, t0
     li a0, 1
     ret
 
@@ -77,6 +79,8 @@ simple_fn:
 naive_pow:
     # BEGIN PROLOGUE
     # END PROLOGUE
+    addi sp, sp, -4
+    sw s0,0(sp)
     li s0, 1
 naive_pow_loop:
     beq a1, zero, naive_pow_end
@@ -85,6 +89,8 @@ naive_pow_loop:
     j naive_pow_loop
 naive_pow_end:
     mv a0, s0
+    lw s0,0(sp)
+    addi sp, sp, 4
     # BEGIN EPILOGUE
     # END EPILOGUE
     ret
@@ -100,9 +106,12 @@ inc_arr:
     #
     # FIXME What other registers need to be saved?
     #
-    addi sp, sp, -4
+    addi sp, sp, -16
     sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
     # END PROLOGUE
+
     mv s0, a0 # Copy start of array to saved register
     mv s1, a1 # Copy length of array to saved register
     li t0, 0 # Initialize counter to 0
@@ -116,14 +125,18 @@ inc_arr_loop:
     # Hint: What does the "t" in "t0" stand for?
     # Also ask yourself this: why don't we need to preserve t1?
     #
+    sw t0,12(sp)
     jal helper_fn
+    lw s0,12(sp)
     # Finished call for helper_fn
     addi t0, t0, 1 # Increment counter
     j inc_arr_loop
 inc_arr_end:
     # BEGIN EPILOGUE
     lw ra, 0(sp)
-    addi sp, sp, 4
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    addi sp, sp, 16
     # END EPILOGUE
     ret
 
